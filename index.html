@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ITZFIZZ — Welcome</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Syncopate:wght@400;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #080A0C;
+      --track-bg: #0D1014;
+      --border:   rgba(255,255,255,0.06);
+      --accent:   #E8FF47;
+      --accent2:  #FF3D2E;
+      --blue:     #38CFFF;
+      --text:     #EEE9DF;
+      --muted:    #4A4F58;
+      --f-display: 'Syncopate', sans-serif;
+      --f-cond:    'Barlow Condensed', sans-serif;
+      --f-mono:    'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: auto; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--f-cond);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* GRAIN */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9998;
+    }
+
+    /* CURSOR */
+    #cur { position:fixed; width:10px; height:10px; background:var(--accent); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); mix-blend-mode:difference; }
+    #cur-ring { position:fixed; width:38px; height:38px; border:1.5px solid rgba(232,255,71,.45); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); }
+
+    /* NAV */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.6rem 3.5rem;
+      transition: background .4s, backdrop-filter .4s;
+    }
+    .nav-logo { font-family: var(--f-display); font-size: .85rem; letter-spacing: .25em; color: var(--accent); }
+    .nav-right { display: flex; gap: 2.8rem; list-style: none; }
+    .nav-right a { font-family: var(--f-mono); font-size: .65rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color .25s; }
+    .nav-right a:hover { color: var(--text); }
+
+    /* HERO SCROLL TRACK */
+    #section { height: 300vh; position: relative; }
+
+    #track {
+      position: sticky; top: 0;
+      height: 100vh; width: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      justify-content: center;
+    }
+
+    /* ROAD STRIP */
+    #road {
+      position: absolute;
+      left: 0; right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 210px;
+      background: linear-gradient(180deg, #0c0f12 0%, #101418 50%, #0c0f12 100%);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      overflow: hidden;
+    }
+
+    /* Road dashes */
+    #road::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 0; right: 0; height: 1px;
+      transform: translateY(-50%);
+      background: repeating-linear-gradient(
+        to right,
+        rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 36px,
+        transparent 36px, transparent 72px
+      );
+    }
+
+    /* Edge glows on road */
+    #road::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(232,255,71,.035) 0%, transparent 35%),
+        linear-gradient(to top,    rgba(232,255,71,.035) 0%, transparent 35%);
+      pointer-events: none;
+    }
+
+    /* NEON TRAIL */
+    #trail {
+      position: absolute; top: 0; left: 0;
+      height: 100%; width: 0;
+      z-index: 1;
+      background: linear-gradient(to right, transparent 60%, rgba(232,255,71,.07));
+      border-right: 2px solid rgba(232,255,71,.55);
+      box-shadow: 0 0 28px 6px rgba(232,255,71,.15), 0 0 60px 10px rgba(232,255,71,.06);
+      pointer-events: none;
+    }
+
+    /* HEADLINE LAYERS */
+    .headline-layer {
+      position: absolute;
+      top: 50%; left: 5%;
+      transform: translateY(-50%);
+      display: flex; align-items: center; gap: 0;
+      font-family: var(--f-cond);
+      font-size: clamp(4rem, 11.5vw, 10.5rem);
+      font-weight: 900;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      z-index: 5;
+      line-height: 1;
+      user-select: none;
+    }
+
+    #hl-outline .ch {
+      -webkit-text-stroke: 1px rgba(255,255,255,0.09);
+      color: transparent;
+      display: inline-block;
+    }
+
+    #hl-filled .ch {
+      display: inline-block;
+      color: var(--text);
+      opacity: 0;
+      transform: scale(.8) translateY(6px);
+      will-change: opacity, transform;
+    }
+
+    #hl-filled .ch.accent { color: var(--accent); text-shadow: 0 0 40px rgba(232,255,71,.5), 0 0 100px rgba(232,255,71,.18); }
+
+    .space-ch { display: inline-block; width: .28em; }
+
+    /* CAR */
+    #car {
+      position: absolute;
+      top: 50%; left: 0;
+      transform: translateY(-50%);
+      z-index: 20;
+      width: 180px;
+      will-change: transform;
+    }
+
+    /* STAT CARDS */
+    .stat-card {
+      position: absolute; z-index: 30;
+      opacity: 0;
+      padding: 1.5rem 1.8rem;
+      min-width: 190px;
+      border-radius: 3px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .stat-tag {
+      font-family: var(--f-mono);
+      font-size: .52rem; letter-spacing: .2em;
+      text-transform: uppercase;
+      opacity: .45; margin-bottom: .55rem;
+      color: currentColor;
+    }
+    .stat-num {
+      font-family: var(--f-cond);
+      font-size: clamp(2.8rem, 4.5vw, 4.2rem);
+      font-weight: 900; line-height: 1;
+      letter-spacing: .02em;
+    }
+    .stat-num sup { font-size: .42em; font-family: var(--f-mono); vertical-align: super; margin-left: .06em; }
+    .stat-label {
+      font-family: var(--f-mono); font-size: .58rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      margin-top: .55rem; line-height: 1.55;
+      max-width: 16ch; opacity: .7;
+      color: var(--text);
+    }
+
+    /* Card positions + palettes */
+    .c1 { top: 8%; right: 28%; background: rgba(232,255,71,.07); border: 1px solid rgba(232,255,71,.22); color: var(--accent); }
+    .c2 { bottom: 8%; right: 32%; background: rgba(56,207,255,.06); border: 1px solid rgba(56,207,255,.18); color: var(--blue); }
+    .c3 { top: 8%; right: 5%; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09); color: var(--text); }
+    .c4 { bottom: 8%; right: 5%; background: rgba(255,61,46,.07); border: 1px solid rgba(255,61,46,.22); color: var(--accent2); }
+
+    /* Road edge labels */
+    .rl {
+      position: absolute; z-index: 4;
+      font-family: var(--f-mono);
+      font-size: .55rem; letter-spacing: .22em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .rl-top { top: calc(50% - 126px); left: 3.5rem; }
+    .rl-bot { bottom: calc(50% - 126px); left: 3.5rem; }
+
+    /* Scroll hint */
+    #sh { position: absolute; right: 3.5rem; bottom: 2.8rem; z-index: 40; opacity: 0; display: flex; flex-direction: column; align-items: center; gap: .5rem; }
+    #sh span { font-family: var(--f-mono); font-size: .52rem; letter-spacing: .22em; color: var(--muted); writing-mode: vertical-rl; }
+    .sh-line { width: 1px; height: 54px; background: linear-gradient(to bottom, var(--accent), transparent); animation: shp 2.2s ease-in-out infinite; }
+    @keyframes shp { 0%,100%{opacity:1;transform:scaleY(1)} 50%{opacity:.3;transform:scaleY(.5)} }
+
+    /* Corner brackets */
+    .corner { position:absolute; width:16px; height:16px; z-index:40; }
+    .c-tl { top:1.4rem; left:1.4rem; border-top:1px solid var(--muted); border-left:1px solid var(--muted); }
+    .c-tr { top:1.4rem; right:1.4rem; border-top:1px solid var(--muted); border-right:1px solid var(--muted); }
+    .c-bl { bottom:1.4rem; left:1.4rem; border-bottom:1px solid var(--muted); border-left:1px solid var(--muted); }
+    .c-br { bottom:1.4rem; right:1.4rem; border-bottom:1px solid var(--muted); border-right:1px solid var(--muted); }
+
+    /* Section 2 */
+    #section2 {
+      min-height: 100vh; background: #050608;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 6rem 2rem; position: relative; overflow: hidden;
+    }
+    #section2::before {
+      content:''; position:absolute; width:600px; height:600px; border-radius:50%;
+      background: radial-gradient(circle, rgba(232,255,71,.04), transparent 70%);
+      top:50%; left:50%; transform:translate(-50%,-50%);
+    }
+    .s2-tag {
+      font-family: var(--f-mono); font-size: .62rem; letter-spacing: .25em; text-transform: uppercase;
+      color: var(--accent); border: 1px solid rgba(232,255,71,.28); padding: .4rem 1.1rem;
+      margin-bottom: 2.5rem; display: inline-block;
+      opacity: 0; transform: translateY(18px);
+    }
+    .s2-head {
+      font-family: var(--f-cond); font-size: clamp(3rem, 8vw, 8rem);
+      font-weight: 900; line-height: .9; letter-spacing: .04em;
+      text-transform: uppercase; margin-bottom: 2rem;
+      opacity: 0; transform: translateY(28px);
+    }
+    .s2-head em { font-style:normal; color:var(--accent); }
+    .s2-body {
+      font-family: var(--f-mono); font-size: .82rem; line-height: 1.9;
+      color: var(--muted); max-width: 50ch;
+      opacity: 0; transform: translateY(18px);
+    }
+
+    @media(max-width:768px){
+      nav { padding:1.2rem 1.5rem; }
+      .nav-right { display:none; }
+      #car { width:120px; }
+      .headline-layer { font-size:clamp(2.8rem,15vw,5.5rem); left:3%; }
+      .stat-card { min-width:140px; padding:1rem 1.1rem; }
+      .c1 { right:16%; top:6%; }
+      .c2 { right:20%; bottom:6%; }
+      .c3 { right:2%; top:6%; }
+      .c4 { right:2%; bottom:6%; }
+      .rl { display:none; }
+      #sh { right:1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">ITZFIZZ</div>
+  <ul class="nav-right">
+    <li><a href="#">Fleet</a></li>
+    <li><a href="#">Solutions</a></li>
+    <li><a href="#">Data</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div id="section">
+  <div id="track">
+
+    <div class="corner c-tl"></div>
+    <div class="corner c-tr"></div>
+    <div class="corner c-bl"></div>
+    <div class="corner c-br"></div>
+
+    <div class="rl rl-top">// FLEET MANAGEMENT PLATFORM v2.4</div>
+    <div class="rl rl-bot">// SCROLL TO EXPLORE</div>
+
+    <div id="road">
+      <div id="trail"></div>
+      <div class="headline-layer" id="hl-outline"></div>
+      <div class="headline-layer" id="hl-filled"></div>
+
+      <div id="car">
+        <!--
+          Luxury Ferrari-style sports car — top view, rotated 90° to drive right.
+          viewBox 0 0 500 900 portrait → rendered as 180px tall strip driving horizontally.
+          Entire SVG is rotated -90deg via transform so front faces right.
+        -->
+        <svg xmlns="http://www.w3.org/2000/svg"
+             viewBox="0 0 500 900"
+             style="width:180px;height:auto;display:block;transform:rotate(-90deg);transform-origin:center center;filter:drop-shadow(0 0 18px rgba(232,255,71,0.6)) drop-shadow(0 0 55px rgba(232,255,71,0.2)) drop-shadow(0 16px 44px rgba(0,0,0,0.98));">
+          <defs>
+            <linearGradient id="bM" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#1a0000"/>
+              <stop offset="22%"  stop-color="#8B0000"/>
+              <stop offset="50%"  stop-color="#CC1010"/>
+              <stop offset="78%"  stop-color="#8B0000"/>
+              <stop offset="100%" stop-color="#1a0000"/>
+            </linearGradient>
+            <linearGradient id="bS" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%"   stop-color="#FF4444" stop-opacity="0.35"/>
+              <stop offset="45%"  stop-color="#FF1111" stop-opacity="0"/>
+              <stop offset="100%" stop-color="#660000" stop-opacity="0.4"/>
+            </linearGradient>
+            <linearGradient id="hG" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%"   stop-color="#FF3030" stop-opacity="0.15"/>
+              <stop offset="100%" stop-color="#440000" stop-opacity="0.6"/>
+            </linearGradient>
+            <linearGradient id="gG" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%"   stop-color="#1a3a5c"/>
+              <stop offset="40%"  stop-color="#0d2035"/>
+              <stop offset="100%" stop-color="#050d18"/>
+            </linearGradient>
+            <linearGradient id="gS" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#ffffff" stop-opacity="0"/>
+              <stop offset="35%"  stop-color="#aaccff" stop-opacity="0.18"/>
+              <stop offset="55%"  stop-color="#ffffff" stop-opacity="0.06"/>
+              <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+            </linearGradient>
+            <radialGradient id="wR" cx="50%" cy="40%" r="55%">
+              <stop offset="0%"   stop-color="#555"/>
+              <stop offset="60%"  stop-color="#222"/>
+              <stop offset="100%" stop-color="#111"/>
+            </radialGradient>
+            <linearGradient id="sL" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#0d0d0d"/>
+              <stop offset="50%"  stop-color="#1a1a1a"/>
+              <stop offset="100%" stop-color="#0d0d0d"/>
+            </linearGradient>
+            <filter id="gW"><feGaussianBlur stdDeviation="5" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="gR"><feGaussianBlur stdDeviation="5" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <filter id="gN"><feGaussianBlur stdDeviation="6" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+
+          <!-- Ground shadow -->
+          <ellipse cx="250" cy="840" rx="135" ry="22" fill="#000000" fill-opacity="0.45"/>
+
+          <!-- BODY -->
+          <path d="M155 130 Q160 60 250 38 Q340 60 345 130 L360 560 Q358 660 342 710 Q320 755 250 762 Q180 755 158 710 Q142 660 140 560 Z" fill="url(#bM)"/>
+          <path d="M155 130 Q160 60 250 38 Q340 60 345 130 L360 560 Q358 660 342 710 Q320 755 250 762 Q180 755 158 710 Q142 660 140 560 Z" fill="url(#bS)"/>
+
+          <!-- Side sills -->
+          <path d="M140 200 Q128 225 122 285 L122 590 Q124 640 140 680 L155 680 L155 200 Z" fill="url(#sL)" stroke="#111" stroke-width="0.5"/>
+          <path d="M360 200 Q372 225 378 285 L378 590 Q376 640 360 680 L345 680 L345 200 Z" fill="url(#sL)" stroke="#111" stroke-width="0.5"/>
+          <path d="M137 240 L137 650" stroke="#CC1010" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+          <path d="M363 240 L363 650" stroke="#CC1010" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+
+          <!-- HOOD -->
+          <path d="M168 130 Q175 72 250 58 Q325 72 332 130 L342 250 Q322 240 250 237 Q178 240 158 250 Z" fill="#B80C0C" stroke="#7a0505" stroke-width="0.5"/>
+          <path d="M168 130 Q175 72 250 58 Q325 72 332 130 L342 250 Q322 240 250 237 Q178 240 158 250 Z" fill="url(#hG)"/>
+          <path d="M250 64 L250 240" stroke="#6a0000" stroke-width="1.2" opacity="0.5"/>
+          <path d="M188 100 Q218 80 250 76 Q282 80 312 100" fill="none" stroke="#FF5555" stroke-width="1" opacity="0.3"/>
+
+          <!-- Hood vents left -->
+          <path d="M170 165 Q172 150 188 147 L210 147 Q218 150 218 165 L218 190 Q216 196 210 198 L188 198 Q180 196 170 190 Z" fill="#0d0505" stroke="#3a0000" stroke-width="1"/>
+          <line x1="176" y1="157" x2="212" y2="157" stroke="#2a0000" stroke-width="1.5"/>
+          <line x1="174" y1="167" x2="214" y2="167" stroke="#2a0000" stroke-width="1.5"/>
+          <line x1="174" y1="177" x2="214" y2="177" stroke="#2a0000" stroke-width="1.5"/>
+          <line x1="176" y1="187" x2="212" y2="187" stroke="#2a0000" stroke-width="1.5"/>
+
+          <!-- Hood vents right -->
+          <path d="M282 165 Q284 150 300 147 L322 147 Q330 150 330 165 L330 190 Q328 196 322 198 L300 198 Q292 196 282 190 Z" fill="#0d0505" stroke="#3a0000" stroke-width="1"/>
+          <line x1="288" y1="157" x2="324" y2="157" stroke="#2a0000" stroke-width="1.5"/>
+          <line x1="286" y1="167" x2="326" y2="167" stroke="#2a0000" stroke-width="1.5"/>
+          <line x1="286" y1="177" x2="326" y2="177" stroke="#2a0000" stroke-width="1.5"/>
+          <line x1="288" y1="187" x2="324" y2="187" stroke="#2a0000" stroke-width="1.5"/>
+
+          <!-- WINDSHIELD -->
+          <path d="M178 255 Q185 237 250 232 Q315 237 322 255 L330 338 Q328 362 322 372 Q300 387 250 389 Q200 387 178 372 Q172 362 170 338 Z" fill="url(#gG)" stroke="#0a1824" stroke-width="1.5"/>
+          <path d="M178 255 Q185 237 250 232 Q315 237 322 255 L330 338 Q328 362 322 372 Q300 387 250 389 Q200 387 178 372 Q172 362 170 338 Z" fill="url(#gS)"/>
+          <path d="M198 265 Q222 248 250 245 Q278 248 302 262" fill="none" stroke="#aaddff" stroke-width="4" stroke-linecap="round" opacity="0.13"/>
+          <path d="M190 285 Q218 268 250 265 Q282 268 310 280" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.07"/>
+          <path d="M178 255 Q185 237 250 232 Q315 237 322 255 L330 338 Q328 362 322 372 Q300 387 250 389 Q200 387 178 372 Q172 362 170 338 Z" fill="none" stroke="#6a0000" stroke-width="2"/>
+
+          <!-- CABIN ROOF -->
+          <path d="M195 392 Q200 376 250 373 Q300 376 305 392 L310 488 Q308 510 305 520 Q285 530 250 532 Q215 530 195 520 Q192 510 190 488 Z" fill="#9a0808" stroke="#6a0000" stroke-width="1"/>
+          <path d="M195 392 Q200 376 250 373 Q300 376 305 392 L310 488 Q308 510 305 520 Q285 530 250 532 Q215 530 195 520 Q192 510 190 488 Z" fill="url(#hG)" opacity="0.5"/>
+          <line x1="250" y1="374" x2="250" y2="530" stroke="#6a0000" stroke-width="1.2" opacity="0.4"/>
+
+          <!-- Door windows left -->
+          <path d="M150 400 Q152 384 168 379 L192 379 L195 418 L195 502 L168 502 Q152 498 150 480 Z" fill="url(#gG)" opacity="0.85" stroke="#0a1824" stroke-width="1"/>
+          <path d="M150 400 Q152 384 168 379 L192 379 L195 418 L195 502 L168 502 Q152 498 150 480 Z" fill="url(#gS)" opacity="0.5"/>
+          <!-- Door windows right -->
+          <path d="M350 400 Q348 384 332 379 L308 379 L305 418 L305 502 L332 502 Q348 498 350 480 Z" fill="url(#gG)" opacity="0.85" stroke="#0a1824" stroke-width="1"/>
+          <path d="M350 400 Q348 384 332 379 L308 379 L305 418 L305 502 L332 502 Q348 498 350 480 Z" fill="url(#gS)" opacity="0.5"/>
+
+          <!-- Door seams -->
+          <path d="M148 370 L148 660" stroke="#6a0000" stroke-width="1" opacity="0.55"/>
+          <path d="M352 370 L352 660" stroke="#6a0000" stroke-width="1" opacity="0.55"/>
+          <!-- Door handles -->
+          <rect x="136" y="452" width="14" height="5" rx="2.5" fill="#CC1010" opacity="0.6"/>
+          <rect x="350" y="452" width="14" height="5" rx="2.5" fill="#CC1010" opacity="0.6"/>
+
+          <!-- Side air intakes -->
+          <path d="M138 392 Q130 390 125 398 L125 432 Q130 440 138 438 L155 438 L155 392 Z" fill="#0a0505" stroke="#3a0000" stroke-width="1"/>
+          <line x1="127" y1="404" x2="153" y2="404" stroke="#1a0505" stroke-width="1.5"/>
+          <line x1="127" y1="414" x2="153" y2="414" stroke="#1a0505" stroke-width="1.5"/>
+          <line x1="127" y1="424" x2="153" y2="424" stroke="#1a0505" stroke-width="1.5"/>
+          <path d="M362 392 Q370 390 375 398 L375 432 Q370 440 362 438 L345 438 L345 392 Z" fill="#0a0505" stroke="#3a0000" stroke-width="1"/>
+          <line x1="373" y1="404" x2="347" y2="404" stroke="#1a0505" stroke-width="1.5"/>
+          <line x1="373" y1="414" x2="347" y2="414" stroke="#1a0505" stroke-width="1.5"/>
+          <line x1="373" y1="424" x2="347" y2="424" stroke="#1a0505" stroke-width="1.5"/>
+
+          <!-- REAR PANEL -->
+          <path d="M158 660 Q168 702 188 730 Q215 757 250 762 Q285 757 312 730 Q332 702 342 660 Z" fill="#9a0808" stroke="#6a0000" stroke-width="1"/>
+          <path d="M158 660 Q168 702 188 730 Q215 757 250 762 Q285 757 312 730 Q332 702 342 660 Z" fill="url(#hG)" opacity="0.6"/>
+
+          <!-- Rear spoiler wing -->
+          <path d="M148 638 Q148 630 162 628 L338 628 Q352 630 352 638 L352 650 Q352 655 346 656 L154 656 Q148 655 148 650 Z" fill="#0d0505" stroke="#3a0000" stroke-width="1"/>
+          <rect x="188" y="618" width="12" height="38" rx="2" fill="#0d0505" stroke="#3a0000" stroke-width="1"/>
+          <rect x="300" y="618" width="12" height="38" rx="2" fill="#0d0505" stroke="#3a0000" stroke-width="1"/>
+
+          <!-- Rear diffuser -->
+          <path d="M185 728 Q218 748 250 752 Q282 748 315 728 Q317 744 312 754 Q288 768 250 772 Q212 768 188 754 Q183 744 185 728 Z" fill="#0a0505" stroke="#1a0505" stroke-width="1"/>
+          <line x1="202" y1="736" x2="198" y2="762" stroke="#1e0505" stroke-width="2"/>
+          <line x1="218" y1="742" x2="215" y2="768" stroke="#1e0505" stroke-width="2"/>
+          <line x1="234" y1="747" x2="232" y2="772" stroke="#1e0505" stroke-width="2"/>
+          <line x1="250" y1="749" x2="250" y2="774" stroke="#1e0505" stroke-width="2"/>
+          <line x1="266" y1="747" x2="268" y2="772" stroke="#1e0505" stroke-width="2"/>
+          <line x1="282" y1="742" x2="285" y2="768" stroke="#1e0505" stroke-width="2"/>
+          <line x1="298" y1="736" x2="302" y2="762" stroke="#1e0505" stroke-width="2"/>
+
+          <!-- Exhaust -->
+          <ellipse cx="210" cy="768" rx="14" ry="8" fill="#0d0d0d" stroke="#222" stroke-width="1.5"/>
+          <ellipse cx="210" cy="768" rx="10" ry="5" fill="#1a1a1a"/>
+          <ellipse cx="210" cy="768" rx="6"  ry="3" fill="#0a0a0a"/>
+          <ellipse cx="290" cy="768" rx="14" ry="8" fill="#0d0d0d" stroke="#222" stroke-width="1.5"/>
+          <ellipse cx="290" cy="768" rx="10" ry="5" fill="#1a1a1a"/>
+          <ellipse cx="290" cy="768" rx="6"  ry="3" fill="#0a0a0a"/>
+
+          <!-- HEADLIGHTS -->
+          <path d="M152 94 Q140 90 130 100 Q120 113 125 130 Q132 144 148 147 Q164 147 172 136 Q178 123 171 108 Q164 95 152 94 Z" fill="#ddeeff" opacity="0.95" filter="url(#gW)"/>
+          <path d="M125 118 Q136 107 152 104" fill="none" stroke="#E8FF47" stroke-width="4" stroke-linecap="round" filter="url(#gN)" opacity="0.95"/>
+          <path d="M127 128 Q140 118 156 115" fill="none" stroke="#E8FF47" stroke-width="2" stroke-linecap="round" filter="url(#gN)" opacity="0.6"/>
+
+          <path d="M348 94 Q360 90 370 100 Q380 113 375 130 Q368 144 352 147 Q336 147 328 136 Q322 123 329 108 Q336 95 348 94 Z" fill="#ddeeff" opacity="0.95" filter="url(#gW)"/>
+          <path d="M375 118 Q364 107 348 104" fill="none" stroke="#E8FF47" stroke-width="4" stroke-linecap="round" filter="url(#gN)" opacity="0.95"/>
+          <path d="M373 128 Q360 118 344 115" fill="none" stroke="#E8FF47" stroke-width="2" stroke-linecap="round" filter="url(#gN)" opacity="0.6"/>
+
+          <!-- Front grille -->
+          <path d="M188 66 Q218 52 250 49 Q282 52 312 66 Q318 78 312 88 Q282 80 250 78 Q218 80 188 88 Q182 78 188 66 Z" fill="#080303" stroke="#2a0000" stroke-width="1.5"/>
+          <line x1="196" y1="70" x2="304" y2="70" stroke="#1a0505" stroke-width="1.5"/>
+          <line x1="192" y1="77" x2="308" y2="77" stroke="#1a0505" stroke-width="1.5"/>
+          <line x1="192" y1="84" x2="308" y2="84" stroke="#1a0505" stroke-width="1.5"/>
+          <circle cx="250" cy="72" r="7" fill="#CC1010" stroke="#FF3030" stroke-width="1"/>
+
+          <!-- TAILLIGHTS -->
+          <path d="M152 660 Q140 658 132 667 Q125 677 130 694 Q137 708 152 710 Q167 710 175 699 Q181 686 175 672 Q168 660 152 660 Z" fill="#FF1a00" opacity="0.92" filter="url(#gR)"/>
+          <path d="M133 676 Q142 665 155 663" fill="none" stroke="#FF6644" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+
+          <path d="M348 660 Q360 658 368 667 Q375 677 370 694 Q363 708 348 710 Q333 710 325 699 Q319 686 325 672 Q332 660 348 660 Z" fill="#FF1a00" opacity="0.92" filter="url(#gR)"/>
+          <path d="M367 676 Q358 665 345 663" fill="none" stroke="#FF6644" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+
+          <!-- Center spine -->
+          <line x1="250" y1="50" x2="250" y2="750" stroke="#6a0000" stroke-width="1" opacity="0.35" stroke-dasharray="8,12"/>
+          <!-- Body crease lines -->
+          <path d="M143 285 Q196 272 250 269 Q304 272 357 285" fill="none" stroke="#FF4444" stroke-width="1" opacity="0.18"/>
+          <path d="M141 445 Q196 432 250 429 Q304 432 359 445" fill="none" stroke="#FF4444" stroke-width="1" opacity="0.14"/>
+
+          <!-- WHEELS — 10-spoke alloy -->
+          <!-- Front Left -->
+          <g transform="translate(70,198)">
+            <circle r="60" fill="#080808" stroke="#1a1a1a" stroke-width="2"/>
+            <circle r="56" fill="none" stroke="#222" stroke-width="1.5"/>
+            <circle r="50" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+            <circle r="43" fill="url(#wR)" stroke="#333" stroke-width="1.5"/>
+            <g stroke="#777" stroke-width="3.5" stroke-linecap="round">
+              <line x1="0" y1="-41" x2="0" y2="-19"/>
+              <line x1="39" y1="-13.4" x2="18" y2="-6.2"/>
+              <line x1="24.1" y1="35.2" x2="11" y2="16.1"/>
+              <line x1="-24.1" y1="35.2" x2="-11" y2="16.1"/>
+              <line x1="-39" y1="-13.4" x2="-18" y2="-6.2"/>
+            </g>
+            <g stroke="#999" stroke-width="2" stroke-linecap="round" opacity="0.55">
+              <line x1="12.7" y1="-39.4" x2="5.8" y2="-18"/>
+              <line x1="37.6" y1="13.6" x2="17.1" y2="6.2"/>
+              <line x1="0" y1="41" x2="0" y2="19"/>
+              <line x1="-37.6" y1="13.6" x2="-17.1" y2="6.2"/>
+              <line x1="-12.7" y1="-39.4" x2="-5.8" y2="-18"/>
+            </g>
+            <circle r="19" fill="#1c1c1c" stroke="#444" stroke-width="1.5"/>
+            <circle r="28" fill="none" stroke="#3a3a3a" stroke-width="1" stroke-dasharray="4,3"/>
+            <circle r="9" fill="#CC1010" stroke="#FF3030" stroke-width="1"/>
+            <circle r="4" fill="#aa0808"/>
+          </g>
+          <!-- Front Right -->
+          <g transform="translate(430,198)">
+            <circle r="60" fill="#080808" stroke="#1a1a1a" stroke-width="2"/>
+            <circle r="56" fill="none" stroke="#222" stroke-width="1.5"/>
+            <circle r="50" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+            <circle r="43" fill="url(#wR)" stroke="#333" stroke-width="1.5"/>
+            <g stroke="#777" stroke-width="3.5" stroke-linecap="round">
+              <line x1="0" y1="-41" x2="0" y2="-19"/>
+              <line x1="39" y1="-13.4" x2="18" y2="-6.2"/>
+              <line x1="24.1" y1="35.2" x2="11" y2="16.1"/>
+              <line x1="-24.1" y1="35.2" x2="-11" y2="16.1"/>
+              <line x1="-39" y1="-13.4" x2="-18" y2="-6.2"/>
+            </g>
+            <g stroke="#999" stroke-width="2" stroke-linecap="round" opacity="0.55">
+              <line x1="12.7" y1="-39.4" x2="5.8" y2="-18"/>
+              <line x1="37.6" y1="13.6" x2="17.1" y2="6.2"/>
+              <line x1="0" y1="41" x2="0" y2="19"/>
+              <line x1="-37.6" y1="13.6" x2="-17.1" y2="6.2"/>
+              <line x1="-12.7" y1="-39.4" x2="-5.8" y2="-18"/>
+            </g>
+            <circle r="19" fill="#1c1c1c" stroke="#444" stroke-width="1.5"/>
+            <circle r="28" fill="none" stroke="#3a3a3a" stroke-width="1" stroke-dasharray="4,3"/>
+            <circle r="9" fill="#CC1010" stroke="#FF3030" stroke-width="1"/>
+            <circle r="4" fill="#aa0808"/>
+          </g>
+          <!-- Rear Left -->
+          <g transform="translate(70,600)">
+            <circle r="60" fill="#080808" stroke="#1a1a1a" stroke-width="2"/>
+            <circle r="56" fill="none" stroke="#222" stroke-width="1.5"/>
+            <circle r="50" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+            <circle r="43" fill="url(#wR)" stroke="#333" stroke-width="1.5"/>
+            <g stroke="#777" stroke-width="3.5" stroke-linecap="round">
+              <line x1="0" y1="-41" x2="0" y2="-19"/>
+              <line x1="39" y1="-13.4" x2="18" y2="-6.2"/>
+              <line x1="24.1" y1="35.2" x2="11" y2="16.1"/>
+              <line x1="-24.1" y1="35.2" x2="-11" y2="16.1"/>
+              <line x1="-39" y1="-13.4" x2="-18" y2="-6.2"/>
+            </g>
+            <g stroke="#999" stroke-width="2" stroke-linecap="round" opacity="0.55">
+              <line x1="12.7" y1="-39.4" x2="5.8" y2="-18"/>
+              <line x1="37.6" y1="13.6" x2="17.1" y2="6.2"/>
+              <line x1="0" y1="41" x2="0" y2="19"/>
+              <line x1="-37.6" y1="13.6" x2="-17.1" y2="6.2"/>
+              <line x1="-12.7" y1="-39.4" x2="-5.8" y2="-18"/>
+            </g>
+            <circle r="19" fill="#1c1c1c" stroke="#444" stroke-width="1.5"/>
+            <circle r="28" fill="none" stroke="#3a3a3a" stroke-width="1" stroke-dasharray="4,3"/>
+            <circle r="9" fill="#CC1010" stroke="#FF3030" stroke-width="1"/>
+            <circle r="4" fill="#aa0808"/>
+          </g>
+          <!-- Rear Right -->
+          <g transform="translate(430,600)">
+            <circle r="60" fill="#080808" stroke="#1a1a1a" stroke-width="2"/>
+            <circle r="56" fill="none" stroke="#222" stroke-width="1.5"/>
+            <circle r="50" fill="none" stroke="#1a1a1a" stroke-width="1"/>
+            <circle r="43" fill="url(#wR)" stroke="#333" stroke-width="1.5"/>
+            <g stroke="#777" stroke-width="3.5" stroke-linecap="round">
+              <line x1="0" y1="-41" x2="0" y2="-19"/>
+              <line x1="39" y1="-13.4" x2="18" y2="-6.2"/>
+              <line x1="24.1" y1="35.2" x2="11" y2="16.1"/>
+              <line x1="-24.1" y1="35.2" x2="-11" y2="16.1"/>
+              <line x1="-39" y1="-13.4" x2="-18" y2="-6.2"/>
+            </g>
+            <g stroke="#999" stroke-width="2" stroke-linecap="round" opacity="0.55">
+              <line x1="12.7" y1="-39.4" x2="5.8" y2="-18"/>
+              <line x1="37.6" y1="13.6" x2="17.1" y2="6.2"/>
+              <line x1="0" y1="41" x2="0" y2="19"/>
+              <line x1="-37.6" y1="13.6" x2="-17.1" y2="6.2"/>
+              <line x1="-12.7" y1="-39.4" x2="-5.8" y2="-18"/>
+            </g>
+            <circle r="19" fill="#1c1c1c" stroke="#444" stroke-width="1.5"/>
+            <circle r="28" fill="none" stroke="#3a3a3a" stroke-width="1" stroke-dasharray="4,3"/>
+            <circle r="9" fill="#CC1010" stroke="#FF3030" stroke-width="1"/>
+            <circle r="4" fill="#aa0808"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stat-card c1" id="box1">
+      <div class="stat-tag">Logistics KPI</div>
+      <div class="stat-num">58<sup>%</sup></div>
+      <div class="stat-label">Increase in pick up point use</div>
+    </div>
+
+    <div class="stat-card c2" id="box2">
+      <div class="stat-tag">Support Ops</div>
+      <div class="stat-num">23<sup>%</sup></div>
+      <div class="stat-label">Decreased in customer phone calls</div>
+    </div>
+
+    <div class="stat-card c3" id="box3">
+      <div class="stat-tag">Delivery Speed</div>
+      <div class="stat-num">27<sup>%</sup></div>
+      <div class="stat-label">Increase in delivery speeds</div>
+    </div>
+
+    <div class="stat-card c4" id="box4">
+      <div class="stat-tag">Efficiency</div>
+      <div class="stat-num">40<sup>%</sup></div>
+      <div class="stat-label">Improvement in overall efficiency</div>
+    </div>
+
+    <div id="sh">
+      <div class="sh-line"></div>
+      <span>SCROLL</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- SECTION 2 -->
+<section id="section2">
+  <div class="s2-tag" id="s2t">// Performance Metrics</div>
+  <h2 class="s2-head" id="s2h">THE FUTURE OF<br/><em>FLEET TECH</em></h2>
+  <p class="s2-body" id="s2b">Real-time intelligence. Route-level precision.<br/>Every vehicle. Every delivery. Every second.</p>
+</section>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  // ── CURSOR ──
+  const cur = document.getElementById('cur');
+  const curRing = document.getElementById('cur-ring');
+  let mx=0, my=0, rx=0, ry=0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    gsap.to(cur, { x: mx, y: my, duration: .08 });
+  });
+  (function lag(){ rx+=(mx-rx)*.1; ry+=(my-ry)*.1; gsap.set(curRing,{x:rx,y:ry}); requestAnimationFrame(lag); })();
+
+  // ── BUILD HEADLINE ──
+  const words = ['WELCOME', 'ITZFIZZ'];
+  const outlineEl = document.getElementById('hl-outline');
+  const filledEl  = document.getElementById('hl-filled');
+  const spans = [];
+
+  words.forEach((word, wi) => {
+    if (wi > 0) {
+      // Space between words
+      const so = document.createElement('span'); so.className='space-ch'; outlineEl.appendChild(so);
+      const sf = document.createElement('span'); sf.className='space-ch'; filledEl.appendChild(sf);
+    }
+    word.split('').forEach(ch => {
+      const so = document.createElement('span'); so.className='ch'; so.textContent = ch; outlineEl.appendChild(so);
+      const sf = document.createElement('span'); sf.className='ch' + (wi===1 ? ' accent' : ''); sf.textContent = ch; filledEl.appendChild(sf);
+      spans.push(sf);
+    });
+  });
+
+  // ── REFS ──
+  const carEl   = document.getElementById('car');
+  const roadEl  = document.getElementById('road');
+  const trailEl = document.getElementById('trail');
+  const CAR_W   = 180;
+
+  // ── INTRO ──
+  const intro = gsap.timeline({ defaults: { ease:'power3.out' } });
+  intro
+    .from('#car',        { x: -260, opacity:0, duration:1.1 }, 0)
+    .to('#sh',           { opacity:1, duration:.7 }, 1.0)
+    .from('.corner',     { scale:0, opacity:0, stagger:.07, duration:.5 }, 0.2)
+    .from('.rl',         { opacity:0, y:8, stagger:.1, duration:.6 }, 0.3);
+
+  // ── SCROLL DRIVE ──
+  let scrollProgress = 0;
+
+  gsap.to({}, {
+    scrollTrigger: {
+      trigger: '#section',
+      start: 'top top',
+      end:   'bottom top',
+      scrub: 1.5,
+      invalidateOnRefresh: true,
+      onUpdate(self) {
+        scrollProgress = self.progress;
+        const rw   = roadEl.getBoundingClientRect().width;
+        const endX = rw - CAR_W - 16;
+        const carX = endX * self.progress;
+
+        // Move car
+        gsap.set(carEl, { x: carX });
+
+        // Trail
+        gsap.set(trailEl, { width: carX + CAR_W });
+
+        // Reveal letters
+        const roadRect = roadEl.getBoundingClientRect();
+        const revealFront = carX + CAR_W * 0.62;
+
+        spans.forEach(sp => {
+          const r = sp.getBoundingClientRect();
+          const spCenter = r.left - roadRect.left + r.width * .5;
+          if (revealFront >= spCenter) {
+            gsap.to(sp, { opacity:1, scale:1, y:0, duration:.22, ease:'back.out(1.8)', overwrite:'auto' });
+          } else {
+            gsap.to(sp, { opacity:0, scale:.8, y:6, duration:.16, overwrite:'auto' });
+          }
+        });
+      },
+    },
+    duration: 1,
+    ease: 'none',
+  });
+
+  // ── STAT CARDS ──
+  [
+    { id:'box1', s:'top+=220 top' },
+    { id:'box2', s:'top+=460 top' },
+    { id:'box3', s:'top+=680 top' },
+    { id:'box4', s:'top+=900 top' },
+  ].forEach(({ id, s }) => {
+    gsap.fromTo(`#${id}`,
+      { opacity:0, y:24, scale:.95 },
+      {
+        scrollTrigger: { trigger:'#section', start:s, end:`${s.replace('top+=','top+=').replace(/ top$/,'')}+180 top`, scrub:1.2 },
+        opacity:1, y:0, scale:1, ease:'power2.out',
+      }
+    );
+  });
+
+  // ── NAV GLASS ──
+  ScrollTrigger.create({
+    trigger: '#section',
+    start: 'top top',
+    onUpdate(self) {
+      const p = Math.min(self.progress * 5, 1);
+      document.getElementById('nav').style.cssText =
+        `background:rgba(8,10,12,${p*.88}); backdrop-filter:blur(${p*16}px); border-bottom:1px solid rgba(255,255,255,${p*.05});`;
+    },
+  });
+
+  // ── SECTION 2 ──
+  gsap.to(['#s2t','#s2h','#s2b'], {
+    scrollTrigger: { trigger:'#section2', start:'top 68%', toggleActions:'play none none reverse' },
+    opacity:1, y:0, duration:.9, stagger:.18, ease:'power3.out',
+  });
+</script>
+</body>
+</html>
